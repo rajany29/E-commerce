@@ -75,5 +75,27 @@ const Login =  async (req, res) => {
   }
 };
 
+// Update user profile
+const updateProfile = async (req, res) => {
+  try {
+    const allowedUpdates = ['firstName', 'lastName', 'phone', 'address'];
+    const updates = Object.keys(req.body);
+    const isValidOperation = updates.every(update => allowedUpdates.includes(update));
 
-module.exports = {Register , Login}
+    if (!isValidOperation) {
+      return res.status(400).json({ message: 'Invalid Data ' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      req.body,
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.json({ message: 'Profile updated successfully', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+module.exports = {Register , Login , updateProfile}

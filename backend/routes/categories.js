@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express()
 const Category = require('../model/category')
+const {adminAuth} = require('../config/utils')
 
 router.get('/', async (req , res) =>{
     try {
@@ -29,7 +30,7 @@ router.get('/:id' , async (req , res) => {
     }
 })
 
-router.post('/', async (req, res) =>{
+router.post('/',adminAuth , async (req, res) =>{
     try {
         let {name,color,icon} = req.body
         let createCategory = Category({name,color,icon})
@@ -63,7 +64,7 @@ router.put('/:id' ,async (req , res) => {
         return res.status(404).json({message:error.message})
     }
 })
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',adminAuth, async (req, res) => {
   try {
     const id = req.params.id;
     const deletedCategory = await Category.findByIdAndDelete(id);

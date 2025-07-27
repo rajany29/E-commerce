@@ -2,6 +2,7 @@ const express = require('express')
 const router = express()
 const Product = require('../model/product')
 const Category = require('../model/category')
+const {adminAuth} = require('../config/utils')
 const multer = require('multer');
 
 const FILE_TYPE_MAP = {
@@ -53,7 +54,7 @@ router.get('/', async (req , res) =>{
 })
 
 
-router.post('/', uploadOptions.single('image') , async (req, res) =>{
+router.post('/', adminAuth , uploadOptions.single('image') , async (req, res) =>{
     try {
       const { name, description, richDescription, brand,category: categoryId , price, countInStock, rating, numReviews, isFeatured } = req.body;
       let category = await Category.findById(categoryId);
@@ -100,7 +101,7 @@ router.put('/:id' , async (req ,res) => {
   }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',adminAuth , async (req, res) => {
   try {
     const id = req.params.id;
     const deletedProduct = await Product.findByIdAndDelete(id);
@@ -137,7 +138,7 @@ router.get('/get/featured' , async (req , res) => {
   }
 })
 
-router.put('/gallery-images/:id', 
+router.put('/gallery-images/:id', adminAuth ,
     uploadOptions.array('images', 10), 
     async (req, res)=> {
         if(!mongoose.isValidObjectId(req.params.id)) {
